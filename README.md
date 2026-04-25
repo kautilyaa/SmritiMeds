@@ -1,19 +1,5 @@
 # SmritiMeds
 
-## Branding and demo
-
-### App icon
-
-<img src="data/icon.png" alt="SmritiMeds icon" width="140" />
-
-### Demo GIF
-
-![SmritiMeds demo GIF](demo/SmritiMeds_Demo.gif)
-
-Direct file links: [GIF preview](demo/SmritiMeds_Demo.gif) · [MP4 video](demo/SmritiMeds_Demo.mp4)
-
----
-
 I’m building SmritiMeds as a product I would want to trust for medication understanding and reminder management:
 
 - extracting medication instructions from labels and medical documents
