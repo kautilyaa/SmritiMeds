@@ -1,17 +1,18 @@
-"""Streamlit prototype for SmritiMeds medication reminders."""
+"""Streamlit interface for SmritiMeds medication reminders."""
 
 from __future__ import annotations
 
 import io
+from pathlib import Path
 from typing import Any
 
 import streamlit as st
 
-from anthropic_client import SmritiMedsAPIError, analyze_medication_images, debug_request_summary
-from config import load_config, load_env_file
-from local_pill_pipeline import analyze_local_pills
-from pill_detector import DetectorUnavailableError
-from pill_identifier_model import LocalVisionUnavailableError, local_model_status
+from smritimeds.anthropic_client import SmritiMedsAPIError, analyze_medication_images, debug_request_summary
+from smritimeds.config import load_config, load_env_file
+from smritimeds.local_pill_pipeline import analyze_local_pills
+from smritimeds.pill_detector import DetectorUnavailableError
+from smritimeds.pill_identifier_model import LocalVisionUnavailableError, local_model_status
 
 
 def _uploaded_file_to_payload(uploaded_file: Any) -> tuple[bytes, str] | None:
@@ -71,7 +72,7 @@ def _render_local_vision(parsed: dict[str, Any], source_image: Any) -> None:
     st.subheader("Local pill vision beta")
     st.caption(
         "Uses a local YOLO detector plus Hugging Face pillIdentifierAI/pillIdentifier. "
-        "This is a best-effort hackathon feature and should not be treated as authoritative."
+        "This is an experimental local feature and should not be treated as authoritative."
     )
     st.json(local_model_status())
 
@@ -113,15 +114,19 @@ def _render_local_vision(parsed: dict[str, Any], source_image: Any) -> None:
 def main() -> None:
     load_env_file()
     config = load_config()
+    icon_path = Path(__file__).resolve().parent / "data" / "icon.png"
 
-    st.set_page_config(page_title="SmritiMeds", page_icon="💊", layout="centered")
-    st.title("💊 SmritiMeds")
+    st.set_page_config(page_title="SmritiMeds", page_icon=str(icon_path) if icon_path.exists() else "💊", layout="centered")
+    header_cols = st.columns([1, 6])
+    if icon_path.exists():
+        header_cols[0].image(str(icon_path), width=72)
+    header_cols[1].title("SmritiMeds")
     st.caption(
-        "Medication reminder and pill verification prototype powered by Claude Vision. "
+        "Medication reminder and pill verification workspace powered by Claude Vision. "
         "Smriti = remembrance."
     )
     st.warning(
-        "Prototype only: review extracted instructions manually before relying on reminders. "
+        "Review extracted instructions manually before relying on reminders. "
         "This app does not provide medical advice."
     )
 

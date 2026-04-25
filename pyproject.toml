@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smritimeds"
+version = "0.1.0"
+description = "Medication understanding and reminder management application."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "requests>=2.31,<3",
+  "numpy>=1.26,<3",
+  "Pillow>=10,<12",
+  "fastapi>=0.116,<1",
+  "uvicorn>=0.35,<1",
+  "python-multipart>=0.0.20,<1",
+  "streamlit>=1.44,<2",
+]
+
+[project.optional-dependencies]
+local-vision = [
+  "torch",
+  "transformers>=4.50,<5",
+  "ultralytics>=8.3,<9",
+  "huggingface_hub>=0.30,<1",
+  "safetensors>=0.4,<1",
+]
+ocr = [
+  "unsloth",
+  "einops>=0.8,<1",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["smritimeds*"]

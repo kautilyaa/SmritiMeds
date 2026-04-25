@@ -1,116 +1,99 @@
 # SmritiMeds
 
-SmritiMeds is a hackathon-focused medication assistant that combines:
+## Branding and demo
 
-- **React + Vite** for a vibrant frontend
-- **FastAPI** for the Python inference backend
-- **Anthropic Claude Vision** for label understanding and reminder schedule generation
-- **medical OCR backends** for printed and handwritten prescription extraction
-- optional **YOLO pill detection**
-- optional **local Hugging Face pill classification**
+### App icon
 
-The name blends **Smriti** (Sanskrit for remembrance / memory) with **Meds**.
+<img src="data/icon.png" alt="SmritiMeds icon" width="140" />
+
+### Demo GIF
+
+![SmritiMeds demo GIF](demo/SmritiMeds_Demo.gif)
+
+Direct file links: [GIF preview](demo/SmritiMeds_Demo.gif) · [MP4 video](demo/SmritiMeds_Demo.mp4)
 
 ---
 
-## Current architecture
+I’m building SmritiMeds as a product I would want to trust for medication understanding and reminder management:
 
-```text
-frontend/                React + Vite UI
-backend/main.py          FastAPI API
-anthropic_client.py      Claude Vision + OCR-text normalization
-ocr_models.py            Medical OCR routing
-pill_detector.py         YOLO pill detection
-pill_identifier_model.py Hugging Face pill classifier integration
-local_pill_pipeline.py   Hybrid local pill pipeline
-```
+- extracting medication instructions from labels and medical documents
+- converting those instructions into editable reminders
+- reviewing OCR confidence and fallback behavior
+- optionally running local pill detection and classification experiments
 
-### Frontend
-- vibrant gradient UI
-- upload flow for:
-  - bottle / blister images
+I chose the name because it blends **Smriti** (Sanskrit for remembrance / memory) with **Meds** — the product is about helping people remember, verify, and manage medication information with more confidence.
+
+---
+
+## Product overview
+
+This README is written from my perspective as the builder of the project.
+
+### Core capabilities
+- **Medication instruction extraction**
+  - bottle labels
+  - blister packs
   - printed medical documents
   - handwritten prescriptions
-- result panels for:
-  - OCR extraction
-  - structured medication schedule
-  - verification summary
-  - local vision beta status
+- **Reminder management**
+  - import suggested reminders from analysis
+  - edit title, medication, dose, time, and notes
+  - pause, complete, delete, and manually add reminders
+  - persist reminders locally in the web application
+- **Confidence-aware workflows**
+  - OCR service status visibility
+  - automatic Claude fallback when OCR is unavailable or low quality
+  - manual review warnings for uncertain output
 
-### Backend routing
-
-#### 1. Bottle / blister / pharmacy label
-- primary backend: **Claude Vision**
-- best for curved labels and packaging text
-
-#### 2. Printed medical documents / forms / lab reports
-- primary OCR backend: **`naazimsnh02/medocr-vision`**
-- then Claude converts OCR text into reminder JSON
-
-#### 3. Handwritten prescriptions
-- primary OCR backend: **`chinmays18/medical-prescription-ocr`**
-- then Claude converts OCR text into reminder JSON
-
-#### 4. Local vision beta
-- optional **YOLO** detection over pill images
-- optional **`pillIdentifierAI/pillIdentifier`** candidate ranking
+### Supported analysis paths
+1. **Bottle / blister / pharmacy label**
+   - Claude Vision-first
+2. **Printed medical documents**
+   - `naazimsnh02/medocr-vision`, with Claude fallback
+3. **Handwritten prescriptions**
+   - `chinmays18/medical-prescription-ocr`, with Claude fallback
+4. **Optional local vision**
+   - YOLO pill detection
+   - `pillIdentifierAI/pillIdentifier` candidate ranking
 
 ---
 
-## OCR model choices
+## System architecture
 
-### Printed medical OCR
-**Model:** `naazimsnh02/medocr-vision`
+```text
+web/                     React + Vite application
+api/main.py              FastAPI API service
+smritimeds/              Shared Python package
+docs/                    Product and architecture documentation
+tools/scripts/           Operational utilities
+research/notebooks/      Research and evaluation notebooks
+```
 
-Use this for:
-- printed prescriptions
-- lab reports
-- medical forms
-- semi-structured document images
+### Web application
+- responsive React UI
+- upload and routing controls
+- structured results and fallback banners
+- reminder manager with local persistence
 
-The model card describes it as a fine-tuned PaddleOCR-VL medical OCR model trained on prescriptions, lab reports, and forms.
-
-### Handwritten prescription OCR
-**Model:** `chinmays18/medical-prescription-ocr`
-
-Use this for:
-- handwritten prescriptions
-- doctor notes with rough handwriting
-
-This is a Donut-based OCR model specialized for handwritten medical prescriptions.
-
-### Important OCR note
-Both OCR models are assistive only. Their extracted text must still be reviewed by a human before clinical use.
+### API service
+- FastAPI endpoints for health and analysis
+- OCR model routing
+- Claude-based extraction normalization
+- optional local vision enrichment
 
 ---
 
-## Local vision note
+## Environment setup
 
-### YOLO detector
-SmritiMeds includes a short training script for the Hugging Face dataset:
-- `Ultralytics/Medical-pills`
+### Python
 
-### Hugging Face pill classifier
-SmritiMeds also integrates:
-- `pillIdentifierAI/pillIdentifier`
-
-However, the currently published checkpoint appears to have **classifier metadata / weight mismatch** in the downloaded files.  
-So SmritiMeds:
-- downloads and caches the assets locally
-- reports classifier availability clearly
-- fails gracefully instead of crashing
-
----
-
-## Python setup
-
-This project is pinned to:
+Pinned version:
 
 ```bash
 pyenv 3.12.10
 ```
 
-Create the backend environment:
+Create the environment:
 
 ```bash
 cd SmritiMeds
@@ -120,26 +103,38 @@ pip install -r requirements.txt
 pip install -r requirements-local-vision.txt
 ```
 
-### Optional OCR extras
-
-For `medocr-vision`, install:
+Optional OCR extras for `medocr-vision`:
 
 ```bash
 pip install -r requirements-ocr.txt
 ```
 
-> Note: `medocr-vision` depends on `unsloth` + `trust_remote_code`. Depending on hardware and platform, this backend may not be available locally. The API surfaces that status in `/api/health`.
-
----
-
-## Frontend setup
+Install SmritiMeds as a local package:
 
 ```bash
-cd SmritiMeds/frontend
+pip install -e .
+```
+
+Add configuration:
+
+```bash
+cp .env.example .env
+```
+
+Expected key:
+
+```text
+ANTHROPIC_API_KEY
+```
+
+### Web application
+
+```bash
+cd SmritiMeds/web
 npm install
 ```
 
-To point the frontend at a different backend:
+Optional web application API override:
 
 ```bash
 echo 'VITE_API_BASE_URL=http://127.0.0.1:8000' > .env.local
@@ -147,18 +142,18 @@ echo 'VITE_API_BASE_URL=http://127.0.0.1:8000' > .env.local
 
 ---
 
-## Run the full app
+## Running the application
 
-### Terminal 1 — backend
+### Terminal 1 — API service
 ```bash
 cd SmritiMeds
 source .venv/bin/activate
-uvicorn backend.main:app --reload
+uvicorn api.main:app --reload
 ```
 
-### Terminal 2 — frontend
+### Terminal 2 — web application
 ```bash
-cd SmritiMeds/frontend
+cd SmritiMeds/web
 npm run dev
 ```
 
@@ -168,11 +163,55 @@ Open:
 http://127.0.0.1:5173
 ```
 
+Backend health:
+
+```text
+http://127.0.0.1:8000/api/health
+```
+
 ---
 
-## Downloaded local assets
+## Primary workflows
 
-Current local assets used by the project:
+### 1. Analyze a medication source
+- choose a mode:
+  - `Auto Route`
+  - `Bottle / Blister`
+  - `Printed Medical Doc`
+  - `Handwritten Rx`
+- upload a primary image
+- optionally upload a pill verification image
+- run analysis
+
+### 2. Review the extracted result
+- medication name
+- strength
+- instructions
+- suggested schedule
+- confidence notes
+- OCR fallback status
+
+### 3. Manage reminders
+- imported reminders appear in **Reminder manager**
+- edit:
+  - reminder title
+  - medication
+  - dose
+  - time of day
+  - reminder time
+  - notes
+- change state:
+  - active / paused
+  - completed
+- add manual reminders
+- delete reminders
+- clear completed reminders
+
+---
+
+## Local assets
+
+These are the local assets I currently keep in the project:
 
 - YOLO base weights:
   - `models/yolo11n.pt`
@@ -185,33 +224,82 @@ Current local assets used by the project:
 
 ### Included sample images
 
-Two ready-to-test sample images are now available under:
+Ready-to-test examples:
 
 - `sample_images/sample_prescription_medocr.png`
 - `sample_images/sample_lab_report_medocr.png`
 
-Reference OCR text is stored beside them:
+Reference OCR text:
 
 - `sample_images/sample_prescription_medocr.txt`
 - `sample_images/sample_lab_report_medocr.txt`
 
+### Research notebooks
+
+Canonical notebook location:
+
+- `research/notebooks/01_claude_vision_smoke_test.ipynb`
+- `research/notebooks/02_prompt_eval_and_schedule_render.ipynb`
+
 ---
 
-## Train the YOLO pill detector
+## OCR and local vision notes
+
+### Printed medical OCR
+Model:
+- `naazimsnh02/medocr-vision`
+
+Best for:
+- printed prescriptions
+- lab reports
+- medical forms
+
+### Handwritten prescription OCR
+Model:
+- `chinmays18/medical-prescription-ocr`
+
+Best for:
+- handwritten prescriptions
+- doctor notes with rough handwriting
+
+### Local pill classifier note
+Model:
+- `pillIdentifierAI/pillIdentifier`
+
+Current caveat:
+- the published checkpoint appears to have classifier metadata / weight mismatch
+- SmritiMeds caches the assets locally and fails gracefully when loading is unreliable
+
+### Visual-only authentication boundary
+
+SmritiMeds applies an explicit **visual-only confidence penalty** to the local vision path.
+
+Why:
+- local camera analysis can assess surface structure, color, shape, and imprint cues
+- it cannot confirm chemical authenticity
+- visually convincing counterfeits can still pass a surface-only check
+
+The local vision UI now surfaces:
+- a visual-only confidence penalty
+- an adjusted visual confidence value
+- a structural-surface-only disclaimer
+- risk factors explaining why the result should not be treated as chemical authentication
+
+### YOLO training
 
 ```bash
 cd SmritiMeds
 source .venv/bin/activate
-python scripts/train_yolo_medical_pills.py --epochs 5 --imgsz 416 --device cpu
+python tools/scripts/train_yolo_medical_pills.py --epochs 5 --imgsz 416 --device cpu
 ```
 
-This writes weights under:
+Trained weights output:
 
 ```text
 models/medical-pills-yolo/weights/best.pt
 ```
 
-Then run with:
+Set runtime path:
 
 ```bash
 export SMRITIMEDS_YOLO_WEIGHTS=models/medical-pills-yolo/weights/best.pt
@@ -219,16 +307,16 @@ export SMRITIMEDS_YOLO_WEIGHTS=models/medical-pills-yolo/weights/best.pt
 
 ---
 
-## API endpoints
+## API reference
 
 ### `GET /api/health`
 Returns:
-- Anthropic configured or not
+- Anthropic configuration state
 - OCR backend availability
-- local vision cache status
+- local vision cache state
 
 ### `POST /api/analyze`
-Multipart form fields:
+Multipart fields:
 - `mode`
   - `auto`
   - `bottle_label`
@@ -243,20 +331,9 @@ Multipart form fields:
 
 ---
 
-## What the app currently does
+## Current product boundaries
 
-- reads bottle / blister / document images
-- routes printed medical docs to `medocr-vision`
-- routes handwritten prescriptions to Donut OCR
-- uses Claude to convert OCR text or visual label content into structured reminder JSON
-- optionally runs local pill detection / classification beta
-- renders results in a polished React frontend
-
----
-
-## Safety boundaries
-
-SmritiMeds is a hackathon prototype. It does **not**:
+SmritiMeds is an assistive medication workflow application. It does **not**:
 
 - provide medical diagnosis
 - prescribe treatment
@@ -264,4 +341,18 @@ SmritiMeds is a hackathon prototype. It does **not**:
 - guarantee pill identity
 - guarantee OCR accuracy
 
-Always require human review for extracted medical information.
+Human review is still required for extracted medical information and reminder interpretation.
+
+---
+
+## Documentation
+
+- Product requirements: `docs/PRODUCT_REQUIREMENTS.md`
+- System architecture: `docs/ARCHITECTURE.md`
+- PillSure safety note: `docs/PILLSURE_NOTE.md`
+- LinkedIn post draft: `docs/LINKEDIN_POST.md`
+
+Compatibility note:
+- `backend/` and `frontend/` remain available as aliases to the canonical `api/` and `web/` directories.
+- root-level `PRODUCT_REQUIREMENTS.md` and `ARCHITECTURE.md` are lightweight pointers to the canonical docs in `docs/`.
+- `scripts/` and `notebooks/` remain available as aliases to the canonical `tools/scripts/` and `research/notebooks/` locations.

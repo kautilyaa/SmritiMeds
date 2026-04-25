@@ -1,6 +1,6 @@
 import unittest
 
-from parser import ParseError, parse_model_output
+from smritimeds.parser import ParseError, parse_model_output
 
 
 class ParserTests(unittest.TestCase):
