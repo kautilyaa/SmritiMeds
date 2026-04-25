@@ -1,4 +1,4 @@
-# SmritiMeds
+<h1 align="center">SmritiMeds</h1>
 
 <p align="center">
   <img src="data/icon.png" alt="SmritiMeds icon" width="120" />
