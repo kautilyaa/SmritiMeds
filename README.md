@@ -346,7 +346,6 @@ Human review is still required for extracted medical information and reminder in
 - Product requirements: `docs/PRODUCT_REQUIREMENTS.md`
 - System architecture: `docs/ARCHITECTURE.md`
 - PillSure safety note: `docs/PILLSURE_NOTE.md`
-- LinkedIn post draft: `docs/LINKEDIN_POST.md`
 
 Compatibility note:
 - `backend/` and `frontend/` remain available as aliases to the canonical `api/` and `web/` directories.
