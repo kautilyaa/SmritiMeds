@@ -1,0 +1,1 @@
+<s_ocr> doctor_name: Dr. A. Smith clinic_name: Meadowview Health clinic_address: 45 Oak Ave. patient_name: John Doe patient_age: 35 date: 2024-12-16 medications: - Hydrochlorothiazide 25 mg - Before meals signature: Dr. A. Smith </s>

@@ -1,0 +1,7 @@
+streamlit>=1.44,<2
+requests>=2.31,<3
+numpy>=1.26,<3
+Pillow>=10,<12
+fastapi>=0.116,<1
+uvicorn>=0.35,<1
+python-multipart>=0.0.20,<1

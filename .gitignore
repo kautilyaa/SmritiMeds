@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+
+.venv/
+.venv-*/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+frontend/node_modules/
+frontend/dist/
+
+.cache/
+**/.cache/
+
+# Large Hugging Face snapshots — re-download per README
+models/chinmays18-medical-prescription-ocr/
+models/pillIdentifierAI-pillIdentifier/
+
+.DS_Store
+*.log
+.ipynb_checkpoints/
