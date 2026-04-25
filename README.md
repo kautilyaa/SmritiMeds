@@ -1,5 +1,13 @@
 # SmritiMeds
 
+<p align="center">
+  <img src="data/icon.png" alt="SmritiMeds icon" width="120" />
+</p>
+
+<p align="center">
+  <img src="demo/SmritiMeds_Demo.gif" alt="SmritiMeds demo" width="700" />
+</p>
+
 I’m building SmritiMeds as a product I would want to trust for medication understanding and reminder management:
 
 - extracting medication instructions from labels and medical documents
